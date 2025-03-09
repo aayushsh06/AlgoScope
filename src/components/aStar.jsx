@@ -1,10 +1,11 @@
-export const runAStar = (grid, startNodes, targetNode) => {
+export const runAStar = (grid, startNodes, targetNode, weights) => {
     if (!startNodes || startNodes.length === 0 || !targetNode) {
         return { visitedNodesInOrder: [], path: [] };
     }
     
     const rows = grid.length;
     const cols = grid[0].length;
+    ;
     
     const visited = Array.from(
         { length: rows }, 
@@ -33,6 +34,26 @@ export const runAStar = (grid, startNodes, targetNode) => {
         return row >= 0 && row < rows && col >= 0 && col < cols;
     };
     
+    const getEdgeCost = (row, col) => {
+        if (!weights) return 1;
+        
+        const index = row * cols + col;
+        if (Array.isArray(weights) && weights[index] !== undefined) {
+            return weights[index];
+        }
+        
+        if (Array.isArray(weights) && weights[row] && weights[row][col] !== undefined) {
+            return weights[row][col];
+        }
+        
+        const key = `${row}-${col}`;
+        if (weights[key] !== undefined) {
+            return weights[key];
+        }
+        
+        return 1;
+    };
+    
     class PriorityQueue {
         constructor() {
             this.elements = [];
@@ -40,15 +61,43 @@ export const runAStar = (grid, startNodes, targetNode) => {
         
         enqueue(element, priority) {
             this.elements.push({ element, priority });
-            this.elements.sort((a, b) => a.priority - b.priority);
+            
+            let i = this.elements.length - 1;
+            while (i > 0 && this.elements[i].priority < this.elements[i-1].priority) {
+                [this.elements[i], this.elements[i-1]] = [this.elements[i-1], this.elements[i]];
+                i--;
+            }
         }
         
         dequeue() {
+            if (this.isEmpty()) return null;
             return this.elements.shift().element;
         }
         
         isEmpty() {
             return this.elements.length === 0;
+        }
+        
+        contains(row, col) {
+            return this.elements.some(item => 
+                item.element.row === row && item.element.col === col
+            );
+        }
+        
+        updatePriority(element, priority) {
+            const index = this.elements.findIndex(item => 
+                item.element.row === element.row && item.element.col === element.col
+            );
+            
+            if (index !== -1) {
+                this.elements[index].priority = priority;
+                
+                let i = index;
+                while (i > 0 && this.elements[i].priority < this.elements[i-1].priority) {
+                    [this.elements[i], this.elements[i-1]] = [this.elements[i-1], this.elements[i]];
+                    i--;
+                }
+            }
         }
     }
     
@@ -60,8 +109,9 @@ export const runAStar = (grid, startNodes, targetNode) => {
         
         for (let row = 0; row < rows; row++) {
             for (let col = 0; col < cols; col++) {
-                gScore[`${row}-${col}`] = Infinity;
-                fScore[`${row}-${col}`] = Infinity;
+                const key = `${row}-${col}`;
+                gScore[key] = Infinity;
+                fScore[key] = Infinity;
             }
         }
         
@@ -90,6 +140,7 @@ export const runAStar = (grid, startNodes, targetNode) => {
                 return true;
             }
             
+            if (visited[current.row][current.col]) continue;
             visited[current.row][current.col] = true;
             
             for (let i = 0; i < 4; i++) {
@@ -101,14 +152,19 @@ export const runAStar = (grid, startNodes, targetNode) => {
                 const neighbor = { row: newRow, col: newCol };
                 const neighborKey = `${newRow}-${newCol}`;
                 
-                const tentativeGScore = gScore[currentKey] + 1;
+                const moveCost = getEdgeCost(newRow, newCol);
+                const tentativeGScore = gScore[currentKey] + moveCost;
                 
                 if (tentativeGScore < gScore[neighborKey]) {
                     cameFrom[neighborKey] = current;
                     gScore[neighborKey] = tentativeGScore;
                     fScore[neighborKey] = tentativeGScore + heuristic(newRow, newCol);
                     
-                    openSet.enqueue(neighbor, fScore[neighborKey]);
+                    if (openSet.contains(newRow, newCol)) {
+                        openSet.updatePriority(neighbor, fScore[neighborKey]);
+                    } else {
+                        openSet.enqueue(neighbor, fScore[neighborKey]);
+                    }
                 }
             }
         }

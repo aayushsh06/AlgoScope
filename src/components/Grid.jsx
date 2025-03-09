@@ -3,8 +3,8 @@ import { useState, useEffect } from 'react';
 import '../styles/Grid.css'
 import { runDFS } from './DFS';
 import { runBFS } from './BFS';
-import { genMaze } from './genMaze';
 import { runAStar } from './aStar';
+import { genMaze } from './genMaze';
 import {genWeights} from './genWeights';
 import Introduction from './Introduction';
 
@@ -18,6 +18,7 @@ const Grid = () => {
     const [visitedNodes, setVisitedNodes] = useState([]);
     const [pathNodes, setPathNodes] = useState([]);
     const [weights, setWeights] = useState(null);
+    const [selectedAlgorithm, setSelectedAlgorithm] = useState('');
 
     const [introOpen, setIntroOpen] = useState(true);
 
@@ -176,8 +177,8 @@ const Grid = () => {
         }
     };
 
-    const visualizeAlgorithm = (algorithm) => {
-        if (startNodes.length === 0 || !targetNode || isRunningAlgorithm) return;
+    const visualizeAlgorithm = () => {
+        if (startNodes.length === 0 || !targetNode || isRunningAlgorithm || !selectedAlgorithm) return;
 
         setIsRunningAlgorithm(true);
         setVisitedNodes([]);
@@ -186,18 +187,18 @@ const Grid = () => {
         let visitedNodesInOrder = [];
         let path = [];
 
-        if (algorithm === 'dfs') {
+        if (selectedAlgorithm === 'dfs') {
             const { visitedNodesInOrder: dfsVisitedNodes, path: dfsPath } = runDFS(grid, startNodes, targetNode);
             visitedNodesInOrder = dfsVisitedNodes;
             path = dfsPath;
         }
-        else if (algorithm == 'bfs') {
+        else if (selectedAlgorithm === 'bfs') {
             const { visitedNodesInOrder: bfsVisitedNodes, path: bfsPath } = runBFS(grid, startNodes, targetNode);
             visitedNodesInOrder = bfsVisitedNodes;
             path = bfsPath;
         }
-        else if (algorithm == 'a-star'){
-            const { visitedNodesInOrder: a_starVisitedNodes, path: a_starPath } = runAStar(grid, startNodes, targetNode);
+        else if (selectedAlgorithm === 'a-star'){
+            const { visitedNodesInOrder: a_starVisitedNodes, path: a_starPath } = runAStar(grid, startNodes, targetNode, weights);
             visitedNodesInOrder = a_starVisitedNodes;
             path = a_starPath;
         }
@@ -325,6 +326,7 @@ const Grid = () => {
         setTargetNode(null);
         setVisitedNodes([]);
         setPathNodes([]);
+        setWeights(null);
     };
 
     return (
@@ -332,86 +334,99 @@ const Grid = () => {
             {introOpen && <Introduction introOpen={introOpen} setIntroOpen={setIntroOpen} />}
             <div className='drawing-select'>
                 <h1 className='header'>Algorithm Visualizer</h1>
-                <button
-                    onClick={() => setDrawMode('barrier-node')}
-                    className={drawMode === 'barrier-node' ? 'active' : ''}
-                >
-                    Barrier Node
-                </button>
-                <button
-                    onClick={() => setDrawMode('start-node')}
-                    className={drawMode === 'start-node' ? 'active' : ''}
-                >
-                    Start Node
-                </button>
-                <button
-                    onClick={() => setDrawMode('target-node')}
-                    className={drawMode === 'target-node' ? 'active' : ''}
-                >
-                    Target Node
-                </button>
-                <button
-                    onClick={() => setDrawMode('unvisited-node')}
-                    className={drawMode === 'unvisited-node' ? 'active' : ''}
-                >
-                    Erase Node
-                </button>
-                <button
-                    onClick={() => createMaze()}
-                    disabled={isRunningAlgorithm || startNodes.length === 0 || !targetNode}
-                    className='generate-maze-button'
-                >
-                    Generate Maze
-                </button>
-                <button
-                    onClick={() => genWeights(grid, setWeights, setIsRunningAlgorithm)}
-                    disabled={isRunningAlgorithm}
-                    className='generate-weights-button'
-                >
-                    Generate Weights
-                </button> 
-                <button
-                    onClick={() => setWeights(null)}
-                    disabled={isRunningAlgorithm}
-                    className='generate-weights-button'
-                >
-                    Remove Weights
-                </button> 
-                <button
-                    onClick={() => visualizeAlgorithm('dfs')}
-                    //disabled={isRunningAlgorithm || startNodes.length === 0 || !targetNode}
-                    className='run-dfs-button'
-                >
-                    Run DFS
-                </button>
-                <button
-                    onClick={() => visualizeAlgorithm('bfs')}
-                    disabled={isRunningAlgorithm || startNodes.length === 0 || !targetNode}
-                    className='run-bfs-button'
-                >
-                    Run BFS
-                </button>
-                <button
-                    onClick={() => visualizeAlgorithm('a-star')}
-                    disabled={isRunningAlgorithm || startNodes.length === 0 || !targetNode}
-                    className='run-a-star-button'
-                >
-                    Run A*
-                </button>
-                <button
-                    onClick={clearVisualization}
-                    disabled={isRunningAlgorithm}
-                    className='clear-visualization-button'
-                >
-                    Clear Visualization
-                </button>
-                <button
-                    onClick={resetGrid}
-                    disabled={isRunningAlgorithm}
-                    className='reset-grid-button'
-                >
-                    Reset Grid
-                </button>
+                
+                {/* Node selection buttons */}
+                <div className="button-group node-controls">
+                    <button
+                        onClick={() => setDrawMode('barrier-node')}
+                        className={drawMode === 'barrier-node' ? 'active' : ''}
+                    >
+                        Barrier Node
+                    </button>
+                    <button
+                        onClick={() => setDrawMode('start-node')}
+                        className={drawMode === 'start-node' ? 'active' : ''}
+                    >
+                        Start Node
+                    </button>
+                    <button
+                        onClick={() => setDrawMode('target-node')}
+                        className={drawMode === 'target-node' ? 'active' : ''}
+                    >
+                        Target Node
+                    </button>
+                    <button
+                        onClick={() => setDrawMode('unvisited-node')}
+                        className={drawMode === 'unvisited-node' ? 'active' : ''}
+                    >
+                        Erase Node
+                    </button>
+                </div>
+                
+                {/* Maze and weight controls */}
+                <div className="button-group maze-controls">
+                    <button
+                        onClick={() => createMaze()}
+                        disabled={isRunningAlgorithm || startNodes.length === 0 || !targetNode}
+                        className='generate-maze-button'
+                    >
+                        Generate Maze
+                    </button>
+                    <button
+                        onClick={() => {genWeights(grid, setWeights, setIsRunningAlgorithm); clearVisualization();}}
+                        disabled={isRunningAlgorithm}
+                        className='generate-weights-button'
+                    >
+                        Generate Weights
+                    </button> 
+                    <button
+                        onClick={() => setWeights(null)}
+                        disabled={isRunningAlgorithm}
+                        className='generate-weights-button'
+                    >
+                        Remove Weights
+                    </button>
+                </div>
+                
+                {/* Algorithm selection and visualization controls */}
+                <div className="button-group algorithm-controls">
+                    <div className="select-container">
+                        <select 
+                            id="algorithm-select"
+                            value={selectedAlgorithm} 
+                            onChange={(e) => setSelectedAlgorithm(e.target.value)}
+                            className="algorithm-select"
+                            disabled={isRunningAlgorithm}
+                        >
+                            <option value="" >Select Algorithm</option>
+                            <option value="dfs">Depth-First Search (DFS)</option>
+                            <option value="bfs">Breadth-First Search (BFS)</option>
+                            <option value="a-star">A* Search</option>
+                        </select>
+                    </div>
+                    <button
+                        onClick={visualizeAlgorithm}
+                        disabled={isRunningAlgorithm || startNodes.length === 0 || !targetNode || !selectedAlgorithm}
+                        className='run-algorithm-button'
+                    >
+                        Visualize
+                    </button>
+                    <button
+                        onClick={clearVisualization}
+                        disabled={isRunningAlgorithm}
+                        className='clear-visualization-button'
+                    >
+                        Clear Visualization
+                    </button>
+                    <button
+                        onClick={resetGrid}
+                        disabled={isRunningAlgorithm}
+                        className='reset-grid-button'
+                    >
+                        Reset Grid
+                    </button>
+                </div>
+                
                 <div className="status-info">
                     {startNodes.length > 0 ?
                         <span>Start Nodes: {startNodes.length}</span> :
@@ -421,6 +436,11 @@ const Grid = () => {
                         <span>Target Node: ({targetNode.row}, {targetNode.col})</span> :
                         <span>No target node set</span>
                     }
+                    {selectedAlgorithm && <span>Algorithm: {
+                        selectedAlgorithm === 'dfs' ? 'DFS' : 
+                        selectedAlgorithm === 'bfs' ? 'BFS' : 
+                        selectedAlgorithm === 'a-star' ? 'A*' : ''
+                    }</span>}
                 </div>
             </div>
             <div
