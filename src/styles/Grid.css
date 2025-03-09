@@ -342,6 +342,22 @@
     border-bottom-color: #0e6655;
 }
 
+/* Remove weights button */
+.drawing-select .remove-weights-button {
+    background-color: #ea3761;
+    border-bottom: 3px solid #c2162d;
+}
+
+.drawing-select .remove-weights-button:hover:not(:disabled) {
+    background-color: #bd2a4c;
+}
+
+.drawing-select .remove-weights-button:active:not(:disabled),
+.drawing-select .remove-weights-button.active {
+    background-color: #ea3761;
+    border-bottom-color: #0e6655;
+}
+
 /* Clear visualization button - red */
 .drawing-select .clear-visualization-button {
     background-color: #e74c3c;

@@ -75,7 +75,6 @@ export const runBFS = (grid, startNodes, targetNode) => {
                 path.unshift(current);
                 current = parentMap[current.row][current.col];
             }
-            console.log(path);
             return { visitedNodesInOrder, path };
         }
         

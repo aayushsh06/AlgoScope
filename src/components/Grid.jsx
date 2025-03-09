@@ -3,9 +3,10 @@ import { useState, useEffect } from 'react';
 import '../styles/Grid.css'
 import { runDFS } from './DFS';
 import { runBFS } from './BFS';
+import { runDijkstra } from './Dijkstra';
 import { runAStar } from './aStar';
 import { genMaze } from './genMaze';
-import {genWeights} from './genWeights';
+import { genWeights } from './genWeights';
 import Introduction from './Introduction';
 
 
@@ -84,7 +85,7 @@ const Grid = () => {
         clearVisualization();
         setGrid(prevGrid => {
             const newGrid = [...prevGrid];
-            
+
             for (let i = 0; i < newGrid.length; i++) {
                 newGrid[i] = [...newGrid[i]];
             }
@@ -187,6 +188,7 @@ const Grid = () => {
         let visitedNodesInOrder = [];
         let path = [];
 
+
         if (selectedAlgorithm === 'dfs') {
             const { visitedNodesInOrder: dfsVisitedNodes, path: dfsPath } = runDFS(grid, startNodes, targetNode);
             visitedNodesInOrder = dfsVisitedNodes;
@@ -197,10 +199,15 @@ const Grid = () => {
             visitedNodesInOrder = bfsVisitedNodes;
             path = bfsPath;
         }
-        else if (selectedAlgorithm === 'a-star'){
+        else if (selectedAlgorithm === 'a-star') {
             const { visitedNodesInOrder: a_starVisitedNodes, path: a_starPath } = runAStar(grid, startNodes, targetNode, weights);
             visitedNodesInOrder = a_starVisitedNodes;
             path = a_starPath;
+        }
+        else if(selectedAlgorithm === 'dijkstra') {
+            const { visitedNodesInOrder: disjkstraVisitedNodes, path: disjkstraPath } = runDijkstra(grid, startNodes, targetNode, weights);
+            visitedNodesInOrder = disjkstraVisitedNodes;
+            path = disjkstraPath;
         }
 
 
@@ -255,7 +262,7 @@ const Grid = () => {
 
         setGrid(prevGrid => {
             const newGrid = [...prevGrid];
-            for(let i=1; i<startNodes.length; ++i){
+            for (let i = 1; i < startNodes.length; ++i) {
                 const node = startNodes[i];
                 newGrid[node.row][node.col] = 'unvisited-node';
             }
@@ -264,7 +271,7 @@ const Grid = () => {
 
 
         setStartNodes(prevNodes => [prevNodes[0]]);
-        
+
         const setToBarrier = genMaze(grid, startNodes[0], targetNode);
 
         const animateMaze = () => {
@@ -290,22 +297,22 @@ const Grid = () => {
         if (setToBarrier.length > 0) {
             animateMaze();
         }
-        else{
+        else {
             setIsRunningAlgorithm(false);
         }
     }
 
     const resetMaze = () => {
         setGrid(prevGrid => {
-            const newGrid = [...prevGrid] 
+            const newGrid = [...prevGrid]
             for (let row = 0; row < newGrid.length; row++) {
                 for (let col = 0; col < newGrid[0].length; col++) {
 
-                    const isStartNode = startNodes && startNodes[0].row == row && 
+                    const isStartNode = startNodes && startNodes[0].row == row &&
                         startNodes[0].col == col;
-                    const isTargetNode = targetNode && 
+                    const isTargetNode = targetNode &&
                         targetNode.row === row && targetNode.col === col;
-                    
+
                     if (!isStartNode && !isTargetNode) {
                         newGrid[row][col] = 'unvisited-node';
                     }
@@ -334,7 +341,7 @@ const Grid = () => {
             {introOpen && <Introduction introOpen={introOpen} setIntroOpen={setIntroOpen} />}
             <div className='drawing-select'>
                 <h1 className='header'>Algorithm Visualizer</h1>
-                
+
                 {/* Node selection buttons */}
                 <div className="button-group node-controls">
                     <button
@@ -362,7 +369,7 @@ const Grid = () => {
                         Erase Node
                     </button>
                 </div>
-                
+
                 {/* Maze and weight controls */}
                 <div className="button-group maze-controls">
                     <button
@@ -373,27 +380,27 @@ const Grid = () => {
                         Generate Maze
                     </button>
                     <button
-                        onClick={() => {genWeights(grid, setWeights, setIsRunningAlgorithm); clearVisualization();}}
+                        onClick={() => { genWeights(grid, setWeights, setIsRunningAlgorithm); clearVisualization(); }}
                         disabled={isRunningAlgorithm}
                         className='generate-weights-button'
                     >
                         Generate Weights
-                    </button> 
+                    </button>
                     <button
                         onClick={() => setWeights(null)}
                         disabled={isRunningAlgorithm}
-                        className='generate-weights-button'
+                        className='remove-weights-button'
                     >
                         Remove Weights
                     </button>
                 </div>
-                
+
                 {/* Algorithm selection and visualization controls */}
                 <div className="button-group algorithm-controls">
                     <div className="select-container">
-                        <select 
+                        <select
                             id="algorithm-select"
-                            value={selectedAlgorithm} 
+                            value={selectedAlgorithm}
                             onChange={(e) => setSelectedAlgorithm(e.target.value)}
                             className="algorithm-select"
                             disabled={isRunningAlgorithm}
@@ -401,6 +408,7 @@ const Grid = () => {
                             <option value="" >Select Algorithm</option>
                             <option value="dfs">Depth-First Search (DFS)</option>
                             <option value="bfs">Breadth-First Search (BFS)</option>
+                            <option value="dijkstra">Dijkstra's Algorithm</option>
                             <option value="a-star">A* Search</option>
                         </select>
                     </div>
@@ -426,7 +434,7 @@ const Grid = () => {
                         Reset Grid
                     </button>
                 </div>
-                
+
                 <div className="status-info">
                     {startNodes.length > 0 ?
                         <span>Start Nodes: {startNodes.length}</span> :
@@ -437,9 +445,9 @@ const Grid = () => {
                         <span>No target node set</span>
                     }
                     {selectedAlgorithm && <span>Algorithm: {
-                        selectedAlgorithm === 'dfs' ? 'DFS' : 
-                        selectedAlgorithm === 'bfs' ? 'BFS' : 
-                        selectedAlgorithm === 'a-star' ? 'A*' : ''
+                        selectedAlgorithm === 'dfs' ? 'DFS' :
+                            selectedAlgorithm === 'bfs' ? 'BFS' :
+                                selectedAlgorithm === 'a-star' ? 'A*' : ''
                     }</span>}
                 </div>
             </div>
@@ -477,7 +485,7 @@ const Grid = () => {
                                     onMouseDown={() => handleMouseDown(rowIndex, colIndex)}
                                     onMouseEnter={() => handleGridClick(rowIndex, colIndex)}
                                 >
-                                {weights ? weights[rowIndex][colIndex] : null}
+                                    {weights ? weights[rowIndex][colIndex] : null}
                                 </div>
                             );
                         })}

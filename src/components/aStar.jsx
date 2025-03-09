@@ -5,7 +5,6 @@ export const runAStar = (grid, startNodes, targetNode, weights) => {
     
     const rows = grid.length;
     const cols = grid[0].length;
-    ;
     
     const visited = Array.from(
         { length: rows }, 
@@ -25,7 +24,8 @@ export const runAStar = (grid, startNodes, targetNode, weights) => {
     };
     
     const visitedNodesInOrder = [];
-    let finalPath = [];
+    let bestPath = [];
+    let bestPathCost = Infinity;
     
     const dr = [-1, 0, 1, 0];
     const dc = [0, 1, 0, -1];
@@ -61,12 +61,7 @@ export const runAStar = (grid, startNodes, targetNode, weights) => {
         
         enqueue(element, priority) {
             this.elements.push({ element, priority });
-            
-            let i = this.elements.length - 1;
-            while (i > 0 && this.elements[i].priority < this.elements[i-1].priority) {
-                [this.elements[i], this.elements[i-1]] = [this.elements[i-1], this.elements[i]];
-                i--;
-            }
+            this.elements.sort((a, b) => a.priority - b.priority);
         }
         
         dequeue() {
@@ -89,19 +84,22 @@ export const runAStar = (grid, startNodes, targetNode, weights) => {
                 item.element.row === element.row && item.element.col === element.col
             );
             
-            if (index !== -1) {
+            if (index !== -1 && this.elements[index].priority > priority) {
                 this.elements[index].priority = priority;
-                
-                let i = index;
-                while (i > 0 && this.elements[i].priority < this.elements[i-1].priority) {
-                    [this.elements[i], this.elements[i-1]] = [this.elements[i-1], this.elements[i]];
-                    i--;
-                }
+                this.elements.sort((a, b) => a.priority - b.priority);
             }
         }
     }
     
-    const astar = (startNode) => {
+    const runAStarFromStart = (startNode) => {
+        const localVisited = Array.from(
+            { length: rows }, 
+            (_, r) => Array.from(
+                { length: cols },
+                (_, c) => visited[r][c]
+            )
+        );
+        
         const openSet = new PriorityQueue();
         const cameFrom = {};
         const gScore = {};
@@ -121,33 +119,39 @@ export const runAStar = (grid, startNodes, targetNode, weights) => {
         
         openSet.enqueue(startNode, fScore[startKey]);
         
-        while (!openSet.isEmpty()) {
+        const localVisitedNodes = [];
+        let foundPath = false;
+        let currentPath = [];
+        let currentPathCost = Infinity;
+        
+        while (!openSet.isEmpty() && !foundPath) {
             const current = openSet.dequeue();
             const currentKey = `${current.row}-${current.col}`;
             
-            visitedNodesInOrder.push(current);
+            localVisitedNodes.push(current);
             
             if (current.row === targetNode.row && current.col === targetNode.col) {
                 let pathNode = current;
-                const path = [pathNode];
+                currentPath = [pathNode];
                 
                 while (cameFrom[`${pathNode.row}-${pathNode.col}`]) {
                     pathNode = cameFrom[`${pathNode.row}-${pathNode.col}`];
-                    path.unshift(pathNode);
+                    currentPath.unshift(pathNode);
                 }
                 
-                finalPath = path;
-                return true;
+                currentPathCost = gScore[`${current.row}-${current.col}`];
+                foundPath = true;
+                break;
             }
             
-            if (visited[current.row][current.col]) continue;
-            visited[current.row][current.col] = true;
+            if (localVisited[current.row][current.col]) continue;
+            localVisited[current.row][current.col] = true;
             
             for (let i = 0; i < 4; i++) {
                 const newRow = current.row + dr[i];
                 const newCol = current.col + dc[i];
                 
-                if (!isValid(newRow, newCol) || visited[newRow][newCol]) continue;
+                if (!isValid(newRow, newCol) || localVisited[newRow][newCol]) continue;
                 
                 const neighbor = { row: newRow, col: newCol };
                 const neighborKey = `${newRow}-${newCol}`;
@@ -169,17 +173,24 @@ export const runAStar = (grid, startNodes, targetNode, weights) => {
             }
         }
         
-        return false;
+        visitedNodesInOrder.push(...localVisitedNodes);
+        
+        if (foundPath && currentPathCost < bestPathCost) {
+            bestPath = currentPath;
+            bestPathCost = currentPathCost;
+        }
+        
+        return foundPath;
     };
     
+    let foundAnyPath = false;
     for (const startNode of startNodes) {
-        if (astar(startNode)) {
-            break;
-        }
+        const foundPathFromThisStart = runAStarFromStart(startNode);
+        foundAnyPath = foundAnyPath || foundPathFromThisStart;
     }
     
     return {
         visitedNodesInOrder,
-        path: finalPath
+        path: foundAnyPath ? bestPath : []
     };
 };
