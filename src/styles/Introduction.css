@@ -20,6 +20,7 @@
     border-radius: 10px;
     position: relative;
     width: 400px;
+    overflow-y: auto;
     max-width: 50%;
     max-height: 60%;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);

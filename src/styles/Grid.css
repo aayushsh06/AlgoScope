@@ -154,11 +154,15 @@
     transform: translateY(10px);
 }
   
+/* Disabled button styles - moved higher in specificity and made more consistent */
 .drawing-select button:disabled {
-    background-color: #95a5a6;
+    background-color: #95a5a6 !important; /* Use !important to override specific button colors */
     cursor: not-allowed;
     opacity: 0.7;
-    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.1) !important;
+    border-bottom: 3px solid #7f8c8d !important;
+    transform: none !important;
+    color: rgba(255, 255, 255, 0.8) !important;
 }
 
 /* Button for barrier nodes */

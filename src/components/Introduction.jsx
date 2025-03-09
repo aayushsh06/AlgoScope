@@ -30,7 +30,7 @@ const Introduction = ({ introOpen, setIntroOpen }) => {
                     <span>2. </span>
                     Run the Algorithm:
 
-                    Choose DFS or BFS to run the pathfinding algorithm. Make sure you’ve set both a Start Node and a Target Node first. More algorithms soon to come!
+                    Choose a pathfinding algorithm to run. Make sure you’ve set both a Start Node and a Target Node first. More algorithms soon to come!
                 </p>
                 <p>
                     

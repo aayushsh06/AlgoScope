@@ -4,6 +4,7 @@ import '../styles/Grid.css'
 import { runDFS } from './DFS';
 import { runBFS } from './BFS';
 import { genMaze } from './genMaze';
+import { runAStar } from './aStar';
 import Introduction from './Introduction';
 
 
@@ -188,6 +189,11 @@ const Grid = () => {
             visitedNodesInOrder = bfsVisitedNodes;
             path = bfsPath;
         }
+        else if (algorithm == 'a-star'){
+            const { visitedNodesInOrder: a_starVisitedNodes, path: a_starPath } = runAStar(grid, startNodes, targetNode);
+            visitedNodesInOrder = a_starVisitedNodes;
+            path = a_starPath;
+        }
 
 
         const animateVisitedNodes = () => {
@@ -235,8 +241,22 @@ const Grid = () => {
 
     const createMaze = () => {
         resetMaze();
+        clearVisualization();
         setIsRunningAlgorithm(true);
         if (!startNodes) { return; }
+
+        setGrid(prevGrid => {
+            const newGrid = [...prevGrid];
+            for(let i=1; i<startNodes.length; ++i){
+                const node = startNodes[i];
+                newGrid[node.row][node.col] = 'unvisited-node';
+            }
+            return newGrid;
+        })
+
+
+        setStartNodes(prevNodes => [prevNodes[0]]);
+        
         const setToBarrier = genMaze(grid, startNodes[0], targetNode);
 
         const animateMaze = () => {
@@ -251,6 +271,9 @@ const Grid = () => {
                         newGrid[node.row][node.col] = 'barrier-node';
                         return newGrid;
                     });
+                    if (i === setToBarrier.length - 1) {
+                        setIsRunningAlgorithm(false);
+                    }
 
                 }, i * delayPerIteration);
             }
@@ -259,7 +282,9 @@ const Grid = () => {
         if (setToBarrier.length > 0) {
             animateMaze();
         }
-        setIsRunningAlgorithm(false);
+        else{
+            setIsRunningAlgorithm(false);
+        }
     }
 
     const resetMaze = () => {
@@ -344,6 +369,13 @@ const Grid = () => {
                     className='run-bfs-button'
                 >
                     Run BFS
+                </button>
+                <button
+                    onClick={() => visualizeAlgorithm('a-star')}
+                    disabled={isRunningAlgorithm || startNodes.length === 0 || !targetNode}
+                    className='run-bfs-button'
+                >
+                    Run A*
                 </button>
                 <button
                     onClick={clearVisualization}
