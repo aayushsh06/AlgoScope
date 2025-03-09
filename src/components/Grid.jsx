@@ -77,6 +77,7 @@ const Grid = () => {
     const colorCell = (row, col) => {
         if (!drawMode || isRunningAlgorithm) return;
 
+        clearVisualization();
         setGrid(prevGrid => {
             const newGrid = [...prevGrid];
             newGrid[row] = [...newGrid[row]];
@@ -233,10 +234,10 @@ const Grid = () => {
     };
 
     const createMaze = () => {
+        resetMaze();
         setIsRunningAlgorithm(true);
         if (!startNodes) { return; }
         const setToBarrier = genMaze(grid, startNodes[0], targetNode);
-        console.log(setToBarrier);
 
         const animateMaze = () => {
             const totalDuration = 3000;
@@ -259,6 +260,26 @@ const Grid = () => {
             animateMaze();
         }
         setIsRunningAlgorithm(false);
+    }
+
+    const resetMaze = () => {
+        setGrid(prevGrid => {
+            const newGrid = [...prevGrid] 
+            for (let row = 0; row < newGrid.length; row++) {
+                for (let col = 0; col < newGrid[0].length; col++) {
+
+                    const isStartNode = startNodes && startNodes[0].row == row && 
+                        startNodes[0].col == col;
+                    const isTargetNode = targetNode && 
+                        targetNode.row === row && targetNode.col === col;
+                    
+                    if (!isStartNode && !isTargetNode) {
+                        newGrid[row][col] = 'unvisited-node';
+                    }
+                }
+            }
+            return newGrid;
+        })
     }
 
     const clearVisualization = () => {
@@ -306,31 +327,35 @@ const Grid = () => {
                 <button
                     onClick={() => createMaze()}
                     disabled={isRunningAlgorithm || startNodes.length === 0 || !targetNode}
-                    className='generateMaze'
+                    className='generate-maze-button'
                 >
                     Generate Maze
                 </button>
                 <button
                     onClick={() => visualizeAlgorithm('dfs')}
                     disabled={isRunningAlgorithm || startNodes.length === 0 || !targetNode}
+                    className='run-dfs-button'
                 >
                     Run DFS
                 </button>
                 <button
                     onClick={() => visualizeAlgorithm('bfs')}
                     disabled={isRunningAlgorithm || startNodes.length === 0 || !targetNode}
+                    className='run-bfs-button'
                 >
                     Run BFS
                 </button>
                 <button
                     onClick={clearVisualization}
                     disabled={isRunningAlgorithm}
+                    className='clear-visualization-button'
                 >
                     Clear Visualization
                 </button>
                 <button
                     onClick={resetGrid}
                     disabled={isRunningAlgorithm}
+                    className='reset-grid-button'
                 >
                     Reset Grid
                 </button>

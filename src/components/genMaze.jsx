@@ -6,7 +6,6 @@ export function genMaze(grid, startNode, targetNode) {
     const rows = grid.length;
     const cols = grid[0].length;
     
-    // Start with all cells as walls except the start and target nodes
     const walls = [];
     for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
