@@ -20,7 +20,8 @@
     border-radius: 10px;
     position: relative;
     width: 400px;
-    max-width: 100%;
+    max-width: 50%;
+    max-height: 60%;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   }
   
@@ -37,13 +38,13 @@
   }
 
   .modal-content p {
-    font-size: 1.25rem;
+    font-size: 1rem;
     font-weight: 500;
     margin-bottom: 0px;
   }
 
   .modal-content ul {
-    font-size: 1.25rem;
+    font-size: 1rem;
   }
 
   .modal-content span {

@@ -3,7 +3,9 @@ import { useState, useEffect } from 'react';
 import '../styles/Grid.css'
 import { runDFS } from './DFS';
 import { runBFS } from './BFS';
+import { genMaze } from './genMaze';
 import Introduction from './Introduction';
+
 
 const Grid = () => {
     const [drawMode, setDrawMode] = useState(null);
@@ -230,6 +232,35 @@ const Grid = () => {
         }
     };
 
+    const createMaze = () => {
+        setIsRunningAlgorithm(true);
+        if (!startNodes) { return; }
+        const setToBarrier = genMaze(grid, startNodes[0], targetNode);
+        console.log(setToBarrier);
+
+        const animateMaze = () => {
+            const totalDuration = 3000;
+            const delayPerIteration = totalDuration / setToBarrier.length;
+
+            for (let i = 0; i < setToBarrier.length; i++) {
+                setTimeout(() => {
+                    const node = setToBarrier[i];
+                    setGrid(prevGrid => {
+                        const newGrid = [...prevGrid];
+                        newGrid[node.row][node.col] = 'barrier-node';
+                        return newGrid;
+                    });
+
+                }, i * delayPerIteration);
+            }
+        };
+
+        if (setToBarrier.length > 0) {
+            animateMaze();
+        }
+        setIsRunningAlgorithm(false);
+    }
+
     const clearVisualization = () => {
         setVisitedNodes([]);
         setPathNodes([]);
@@ -245,9 +276,9 @@ const Grid = () => {
 
     return (
         <>
-            {introOpen && <Introduction introOpen={introOpen} setIntroOpen={setIntroOpen}/>}
+            {introOpen && <Introduction introOpen={introOpen} setIntroOpen={setIntroOpen} />}
             <div className='drawing-select'>
-                <h1 className ='header'>Algorithm Visualizer</h1>
+                <h1 className='header'>Algorithm Visualizer</h1>
                 <button
                     onClick={() => setDrawMode('barrier-node')}
                     className={drawMode === 'barrier-node' ? 'active' : ''}
@@ -271,6 +302,13 @@ const Grid = () => {
                     className={drawMode === 'unvisited-node' ? 'active' : ''}
                 >
                     Erase Node
+                </button>
+                <button
+                    onClick={() => createMaze()}
+                    disabled={isRunningAlgorithm || startNodes.length === 0 || !targetNode}
+                    className='generateMaze'
+                >
+                    Generate Maze
                 </button>
                 <button
                     onClick={() => visualizeAlgorithm('dfs')}
