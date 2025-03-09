@@ -5,6 +5,7 @@ import { runDFS } from './DFS';
 import { runBFS } from './BFS';
 import { genMaze } from './genMaze';
 import { runAStar } from './aStar';
+import {genWeights} from './genWeights';
 import Introduction from './Introduction';
 
 
@@ -16,6 +17,7 @@ const Grid = () => {
     const [isRunningAlgorithm, setIsRunningAlgorithm] = useState(false);
     const [visitedNodes, setVisitedNodes] = useState([]);
     const [pathNodes, setPathNodes] = useState([]);
+    const [weights, setWeights] = useState(null);
 
     const [introOpen, setIntroOpen] = useState(true);
 
@@ -81,7 +83,10 @@ const Grid = () => {
         clearVisualization();
         setGrid(prevGrid => {
             const newGrid = [...prevGrid];
-            newGrid[row] = [...newGrid[row]];
+            
+            for (let i = 0; i < newGrid.length; i++) {
+                newGrid[i] = [...newGrid[i]];
+            }
 
             if (drawMode === 'start-node') {
                 const existingIndex = startNodes.findIndex(
@@ -113,10 +118,12 @@ const Grid = () => {
                     setTargetNode(null);
                     newGrid[row][col] = "unvisited-node";
                 } else {
-                    if (targetNode) {
-                        const { row: prevRow, col: prevCol } = targetNode;
-                        newGrid[prevRow] = [...newGrid[prevRow]];
-                        newGrid[prevRow][prevCol] = "unvisited-node";
+                    for (let r = 0; r < newGrid.length; r++) {
+                        for (let c = 0; c < newGrid[r].length; c++) {
+                            if (newGrid[r][c] === 'target-node') {
+                                newGrid[r][c] = 'unvisited-node';
+                            }
+                        }
                     }
 
                     const startNodeIndex = startNodes.findIndex(
@@ -357,8 +364,22 @@ const Grid = () => {
                     Generate Maze
                 </button>
                 <button
+                    onClick={() => genWeights(grid, setWeights, setIsRunningAlgorithm)}
+                    disabled={isRunningAlgorithm}
+                    className='generate-weights-button'
+                >
+                    Generate Weights
+                </button> 
+                <button
+                    onClick={() => setWeights(null)}
+                    disabled={isRunningAlgorithm}
+                    className='generate-weights-button'
+                >
+                    Remove Weights
+                </button> 
+                <button
                     onClick={() => visualizeAlgorithm('dfs')}
-                    disabled={isRunningAlgorithm || startNodes.length === 0 || !targetNode}
+                    //disabled={isRunningAlgorithm || startNodes.length === 0 || !targetNode}
                     className='run-dfs-button'
                 >
                     Run DFS
@@ -373,7 +394,7 @@ const Grid = () => {
                 <button
                     onClick={() => visualizeAlgorithm('a-star')}
                     disabled={isRunningAlgorithm || startNodes.length === 0 || !targetNode}
-                    className='run-bfs-button'
+                    className='run-a-star-button'
                 >
                     Run A*
                 </button>
@@ -436,6 +457,7 @@ const Grid = () => {
                                     onMouseDown={() => handleMouseDown(rowIndex, colIndex)}
                                     onMouseEnter={() => handleGridClick(rowIndex, colIndex)}
                                 >
+                                {weights ? weights[rowIndex][colIndex] : null}
                                 </div>
                             );
                         })}
