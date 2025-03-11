@@ -8,6 +8,7 @@
     width: 100%;
     box-sizing: border-box;
     color: black;
+    user-select: none;
 }
   
 .row {
@@ -57,6 +58,10 @@
     background-color: #3498db;
     border: 1px solid #2980b9;
     position: relative;
+}
+
+.configureStats {
+    background-color: #80afb4;
 }
   
 .visited-node::after {
@@ -133,7 +138,6 @@
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* New button group styling */
 .button-group {
     display: flex;
     flex-wrap: wrap;
@@ -142,7 +146,6 @@
     justify-content: center;
 }
 
-/* Dropdown styling */
 .select-container {
     position: relative;
     margin: 5px;
@@ -193,7 +196,6 @@
     pointer-events: none;
 }
 
-/* Run algorithm button */
 .run-algorithm-button {
     background-color: #3498db;
     border-bottom: 3px solid #2980b9;
@@ -231,12 +233,12 @@
 .drawing-select button:active:not(:disabled),
 .drawing-select button.active {
     box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
-    transform: translateY(10px);
+    transform: translateY(3px);
+    background-color: rgb(83, 60, 255);
 }
   
-/* Disabled button styles - moved higher in specificity and made more consistent */
 .drawing-select button:disabled {
-    background-color: #95a5a6 !important; /* Use !important to override specific button colors */
+    background-color: #95a5a6 !important; 
     cursor: not-allowed;
     opacity: 0.7;
     box-shadow: 0 2px 0 rgba(0, 0, 0, 0.1) !important;
@@ -245,7 +247,6 @@
     color: rgba(255, 255, 255, 0.8) !important;
 }
 
-/* Button for barrier nodes */
 .drawing-select button:has(.active)[onClick*="barrier-node"],
 .drawing-select button[onClick*="barrier-node"] {
     background-color: #34495e;
@@ -262,7 +263,6 @@
     border-bottom-color: #1a2530;
 }
   
-/* Button for start nodes */
 .drawing-select button[onClick*="start-node"] {
     background-color: #27ae60;
     border-bottom: 3px solid #219955;
@@ -278,7 +278,6 @@
     border-bottom-color: #1b7943;
 }
   
-/* Button for target nodes */
 .drawing-select button[onClick*="target-node"] {
     background-color: #e74c3c;
     border-bottom: 3px solid #c0392b;
@@ -294,7 +293,6 @@
     border-bottom-color: #a82315;
 }
   
-/* Button for erasing nodes */
 .drawing-select button[onClick*="unvisited-node"] {
     background-color: #7f8c8d;
     border-bottom: 3px solid #6c7a7b;
@@ -310,7 +308,6 @@
     border-bottom-color: #5c686a;
 }
 
-/* Generate maze button - purple */
 .drawing-select .generate-maze-button {
     background-color: #8e44ad;
     border-bottom: 3px solid #7d3c98;
@@ -326,7 +323,6 @@
     border-bottom-color: #6a3381;
 }
 
-/* Generate weights button */
 .drawing-select .generate-weights-button {
     background-color: #16a085;
     border-bottom: 3px solid #138a72;
@@ -342,7 +338,6 @@
     border-bottom-color: #0e6655;
 }
 
-/* Remove weights button */
 .drawing-select .remove-weights-button {
     background-color: #ea3761;
     border-bottom: 3px solid #c2162d;
@@ -358,7 +353,6 @@
     border-bottom-color: #0e6655;
 }
 
-/* Clear visualization button - red */
 .drawing-select .clear-visualization-button {
     background-color: #e74c3c;
     border-bottom: 3px solid #c0392b;
@@ -374,7 +368,6 @@
     border-bottom-color: #a82315;
 }
 
-/* Reset grid button - darker red */
 .drawing-select .reset-grid-button {
     background-color: #c0392b;
     border-bottom: 3px solid #a82315;

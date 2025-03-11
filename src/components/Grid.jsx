@@ -8,7 +8,7 @@ import { runAStar } from './aStar';
 import { genMaze } from './genMaze';
 import { genWeights } from './genWeights';
 import Introduction from './Introduction';
-import Logo from './Logo'
+import Stats from './Stats';
 
 
 const Grid = () => {
@@ -21,6 +21,9 @@ const Grid = () => {
     const [pathNodes, setPathNodes] = useState([]);
     const [weights, setWeights] = useState(null);
     const [selectedAlgorithm, setSelectedAlgorithm] = useState('');
+
+    const [stats, setStats] = useState(false);
+    const [displayStats, setDisplayStats] = useState(null);
 
     const [introOpen, setIntroOpen] = useState(true);
     const header = useRef(null);
@@ -40,8 +43,8 @@ const Grid = () => {
 
     const resizeWeights = (newRows, newCols) => {
         if (!weights) return null;
-        
-        const newWeights = Array.from({ length: newRows }, (_, rowIndex) => 
+
+        const newWeights = Array.from({ length: newRows }, (_, rowIndex) =>
             Array.from({ length: newCols }, (_, colIndex) => {
                 if (rowIndex < weights.length && colIndex < weights[0].length) {
                     return weights[rowIndex][colIndex];
@@ -49,7 +52,7 @@ const Grid = () => {
                 return Math.floor(Math.random() * 9) + 1;
             })
         );
-        
+
         return newWeights;
     };
 
@@ -76,11 +79,11 @@ const Grid = () => {
                 }));
             }
         });
-        
+
         if (header.current) {
             observer.observe(header.current);
         }
-        
+
         return () => {
             if (header.current) {
                 observer.disconnect();
@@ -250,10 +253,24 @@ const Grid = () => {
             visitedNodesInOrder = a_starVisitedNodes;
             path = a_starPath;
         }
-        else if(selectedAlgorithm === 'dijkstra') {
+        else if (selectedAlgorithm === 'dijkstra') {
             const { visitedNodesInOrder: disjkstraVisitedNodes, path: disjkstraPath } = runDijkstra(grid, startNodes, targetNode, weights);
             visitedNodesInOrder = disjkstraVisitedNodes;
             path = disjkstraPath;
+        }
+
+        let statsData = null;
+
+        if(stats){
+            statsData = 
+            {
+                algorithmRan: selectedAlgorithm,
+                pathFound: path.length > 0,
+                numNodesPath: path.length,
+                numNodesVisited: visitedNodesInOrder.length,
+                pathCost: 0,
+                setDisplayStats: setDisplayStats
+            }
         }
 
 
@@ -285,11 +302,19 @@ const Grid = () => {
 
                         if (i === path.length - 1) {
                             setIsRunningAlgorithm(false);
+                            setDisplayStats(
+                                statsData
+                            )
                         }
                     }, i * delayPerIteration);
                 }
             } else {
                 setIsRunningAlgorithm(false);
+                if (stats) {
+                    setDisplayStats(
+                        statsData
+                    )
+                }
             }
         };
 
@@ -297,6 +322,11 @@ const Grid = () => {
             animateVisitedNodes();
         } else {
             setIsRunningAlgorithm(false);
+            if (stats) {
+                setDisplayStats(
+                    statsData
+                )
+            }
         }
     };
 
@@ -385,8 +415,9 @@ const Grid = () => {
     return (
         <>
             {introOpen && <Introduction introOpen={introOpen} setIntroOpen={setIntroOpen} />}
+            {(displayStats && stats) && <Stats {...displayStats}/>}
             <div className='drawing-select' ref={header}>
-                <div className='title'>       
+                <div className='title'>
                     <h1 className='header'>Algorithm Visualizer</h1>
                 </div>
 
@@ -433,11 +464,17 @@ const Grid = () => {
                         Generate Weights
                     </button>
                     <button
-                        onClick={() => {setWeights(null); clearVisualization(); }}
+                        onClick={() => { setWeights(null); clearVisualization(); }}
                         disabled={isRunningAlgorithm}
                         className='remove-weights-button'
                     >
                         Remove Weights
+                    </button>
+                    <button
+                        onClick={() => { setStats(prev => !prev) }}
+                        disabled={isRunningAlgorithm}
+                        className='configureStats'>
+                        Toggle Statistics
                     </button>
                 </div>
 
@@ -494,6 +531,11 @@ const Grid = () => {
                             selectedAlgorithm === 'bfs' ? 'BFS' :
                                 selectedAlgorithm === 'a-star' ? 'A*' : 'Dijkstra'
                     }</span>}
+                    {stats ?
+                        <span>Getting Algorithm Statistics</span> :
+                        <span>No Algorithm Statistics</span>
+
+                    }
                 </div>
             </div>
             <div
