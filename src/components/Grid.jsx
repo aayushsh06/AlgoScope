@@ -22,7 +22,7 @@ const Grid = () => {
     const [weights, setWeights] = useState(null);
     const [selectedAlgorithm, setSelectedAlgorithm] = useState('');
 
-    const [stats, setStats] = useState(false);
+    const [stats, setStats] = useState(true);
     const [displayStats, setDisplayStats] = useState(null);
 
     const [introOpen, setIntroOpen] = useState(true);
@@ -238,12 +238,12 @@ const Grid = () => {
         let path = [];
 
 
-        if (selectedAlgorithm === 'dfs') {
+        if (selectedAlgorithm === 'Depth First Search') {
             const { visitedNodesInOrder: dfsVisitedNodes, path: dfsPath } = runDFS(grid, startNodes, targetNode);
             visitedNodesInOrder = dfsVisitedNodes;
             path = dfsPath;
         }
-        else if (selectedAlgorithm === 'bfs') {
+        else if (selectedAlgorithm === 'Breadth First Search') {
             const { visitedNodesInOrder: bfsVisitedNodes, path: bfsPath } = runBFS(grid, startNodes, targetNode);
             visitedNodesInOrder = bfsVisitedNodes;
             path = bfsPath;
@@ -253,7 +253,7 @@ const Grid = () => {
             visitedNodesInOrder = a_starVisitedNodes;
             path = a_starPath;
         }
-        else if (selectedAlgorithm === 'dijkstra') {
+        else if (selectedAlgorithm === 'Dijkstra') {
             const { visitedNodesInOrder: disjkstraVisitedNodes, path: disjkstraPath } = runDijkstra(grid, startNodes, targetNode, weights);
             visitedNodesInOrder = disjkstraVisitedNodes;
             path = disjkstraPath;
@@ -267,11 +267,12 @@ const Grid = () => {
                 algorithmRan: selectedAlgorithm,
                 pathFound: path.length > 0,
                 numNodesPath: path.length,
-                numNodesVisited: visitedNodesInOrder.length,
-                pathCost: 0,
+                numNodesVisited: new Set(visitedNodesInOrder.map(node => `${node.row},${node.col}`)).size,
+                cost:path.reduce((sum, node) => sum + (weights && weights[node.row] && weights[node.row][node.col] !== undefined ? weights[node.row][node.col] : 1), 0),
                 setDisplayStats: setDisplayStats
             }
         }
+
 
 
         const animateVisitedNodes = () => {
@@ -488,9 +489,9 @@ const Grid = () => {
                             disabled={isRunningAlgorithm}
                         >
                             <option value="" >Select Algorithm</option>
-                            <option value="dfs">Depth-First Search (DFS)</option>
-                            <option value="bfs">Breadth-First Search (BFS)</option>
-                            <option value="dijkstra">Dijkstra's Algorithm</option>
+                            <option value="Depth First Search">Depth-First Search (DFS)</option>
+                            <option value="Breadth First Search">Breadth-First Search (BFS)</option>
+                            <option value="Dijkstra">Dijkstra's Algorithm</option>
                             <option value="a-star">A* Search</option>
                         </select>
                     </div>
@@ -527,13 +528,13 @@ const Grid = () => {
                         <span>No target node set</span>
                     }
                     {selectedAlgorithm && <span>Algorithm: {
-                        selectedAlgorithm === 'dfs' ? 'DFS' :
-                            selectedAlgorithm === 'bfs' ? 'BFS' :
+                        selectedAlgorithm === 'Depth First Search' ? 'DFS' :
+                            selectedAlgorithm === 'Breadth First Search' ? 'BFS' :
                                 selectedAlgorithm === 'a-star' ? 'A*' : 'Dijkstra'
                     }</span>}
                     {stats ?
-                        <span>Getting Algorithm Statistics</span> :
-                        <span>No Algorithm Statistics</span>
+                        <span>Algorithm Stats: ON</span> :
+                        <span>Algorithm Stats: OFF</span>
 
                     }
                 </div>
