@@ -248,7 +248,7 @@ const Grid = () => {
             visitedNodesInOrder = bfsVisitedNodes;
             path = bfsPath;
         }
-        else if (selectedAlgorithm === 'a-star') {
+        else if (selectedAlgorithm === 'A*') {
             const { visitedNodesInOrder: a_starVisitedNodes, path: a_starPath } = runAStar(grid, startNodes, targetNode, weights);
             visitedNodesInOrder = a_starVisitedNodes;
             path = a_starPath;
@@ -492,7 +492,7 @@ const Grid = () => {
                             <option value="Depth First Search">Depth-First Search (DFS)</option>
                             <option value="Breadth First Search">Breadth-First Search (BFS)</option>
                             <option value="Dijkstra">Dijkstra's Algorithm</option>
-                            <option value="a-star">A* Search</option>
+                            <option value="A*">A* Search</option>
                         </select>
                     </div>
                     <button
@@ -530,7 +530,7 @@ const Grid = () => {
                     {selectedAlgorithm && <span>Algorithm: {
                         selectedAlgorithm === 'Depth First Search' ? 'DFS' :
                             selectedAlgorithm === 'Breadth First Search' ? 'BFS' :
-                                selectedAlgorithm === 'a-star' ? 'A*' : 'Dijkstra'
+                                selectedAlgorithm === 'A*' ? 'A*' : 'Dijkstra'
                     }</span>}
                     {stats ?
                         <span>Algorithm Stats: ON</span> :
