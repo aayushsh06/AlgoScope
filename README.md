@@ -1,4 +1,6 @@
 # Algo Visualizer
+![algorithm-visualizer-large-text](https://github.com/user-attachments/assets/3afa6e95-9abc-4608-9a40-fe95110f3689)
+
 
 ## 🚀 Try it out
 👉 **[Live Demo](https://aayushsh06.github.io/Algo-Visualizer/)**
