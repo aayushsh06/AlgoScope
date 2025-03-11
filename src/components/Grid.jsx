@@ -1,5 +1,5 @@
 import React from 'react'
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import '../styles/Grid.css'
 import { runDFS } from './DFS';
 import { runBFS } from './BFS';
@@ -8,6 +8,7 @@ import { runAStar } from './aStar';
 import { genMaze } from './genMaze';
 import { genWeights } from './genWeights';
 import Introduction from './Introduction';
+import Logo from './Logo'
 
 
 const Grid = () => {
@@ -22,25 +23,43 @@ const Grid = () => {
     const [selectedAlgorithm, setSelectedAlgorithm] = useState('');
 
     const [introOpen, setIntroOpen] = useState(true);
+    const header = useRef(null);
 
     const [windowSize, setWindowSize] = useState({
         width: window.innerWidth,
         height: window.innerHeight,
+        headerHeight: 100
     });
 
-    const rows = Math.floor((windowSize.height - 100) / 23);
+    const rows = Math.floor((windowSize.height - windowSize.headerHeight) / 23);
     const cols = Math.floor(windowSize.width / 23);
 
     const [grid, setGrid] = useState(
         Array.from({ length: rows }, () => Array(cols).fill("unvisited-node"))
     );
 
+    const resizeWeights = (newRows, newCols) => {
+        if (!weights) return null;
+        
+        const newWeights = Array.from({ length: newRows }, (_, rowIndex) => 
+            Array.from({ length: newCols }, (_, colIndex) => {
+                if (rowIndex < weights.length && colIndex < weights[0].length) {
+                    return weights[rowIndex][colIndex];
+                }
+                return Math.floor(Math.random() * 9) + 1;
+            })
+        );
+        
+        return newWeights;
+    };
+
     useEffect(() => {
         const handleResize = () => {
-            setWindowSize({
+            setWindowSize(prev => ({
                 width: window.innerWidth,
-                height: window.innerHeight
-            });
+                height: window.innerHeight,
+                headerHeight: header.current ? header.current.offsetHeight : prev.headerHeight
+            }));
         };
         window.addEventListener("resize", handleResize);
 
@@ -48,7 +67,29 @@ const Grid = () => {
     }, []);
 
     useEffect(() => {
-        const newRows = Math.floor((windowSize.height - 100) / 23);
+        const observer = new ResizeObserver(entries => {
+            if (entries[0]) {
+                const headerHeight = entries[0].target.offsetHeight;
+                setWindowSize(prev => ({
+                    ...prev,
+                    headerHeight: headerHeight
+                }));
+            }
+        });
+        
+        if (header.current) {
+            observer.observe(header.current);
+        }
+        
+        return () => {
+            if (header.current) {
+                observer.disconnect();
+            }
+        };
+    }, []);
+
+    useEffect(() => {
+        const newRows = Math.floor((windowSize.height - windowSize.headerHeight) / 23);
         const newCols = Math.floor(windowSize.width / 23);
 
         if (newRows !== grid.length || newCols !== grid[0].length) {
@@ -66,6 +107,11 @@ const Grid = () => {
             );
 
             setGrid(newGrid);
+
+            if (weights) {
+                const newWeights = resizeWeights(newRows, newCols);
+                setWeights(newWeights);
+            }
 
             setStartNodes(prevStartNodes =>
                 prevStartNodes.filter(node =>
@@ -339,10 +385,11 @@ const Grid = () => {
     return (
         <>
             {introOpen && <Introduction introOpen={introOpen} setIntroOpen={setIntroOpen} />}
-            <div className='drawing-select'>
-                <h1 className='header'>Algorithm Visualizer</h1>
+            <div className='drawing-select' ref={header}>
+                <div className='title'>       
+                    <h1 className='header'>Algorithm Visualizer</h1>
+                </div>
 
-                {/* Node selection buttons */}
                 <div className="button-group node-controls">
                     <button
                         onClick={() => setDrawMode('barrier-node')}
@@ -370,7 +417,6 @@ const Grid = () => {
                     </button>
                 </div>
 
-                {/* Maze and weight controls */}
                 <div className="button-group maze-controls">
                     <button
                         onClick={() => createMaze()}
@@ -387,7 +433,7 @@ const Grid = () => {
                         Generate Weights
                     </button>
                     <button
-                        onClick={() => setWeights(null)}
+                        onClick={() => {setWeights(null); clearVisualization(); }}
                         disabled={isRunningAlgorithm}
                         className='remove-weights-button'
                     >
@@ -395,7 +441,6 @@ const Grid = () => {
                     </button>
                 </div>
 
-                {/* Algorithm selection and visualization controls */}
                 <div className="button-group algorithm-controls">
                     <div className="select-container">
                         <select
@@ -447,7 +492,7 @@ const Grid = () => {
                     {selectedAlgorithm && <span>Algorithm: {
                         selectedAlgorithm === 'dfs' ? 'DFS' :
                             selectedAlgorithm === 'bfs' ? 'BFS' :
-                                selectedAlgorithm === 'a-star' ? 'A*' : ''
+                                selectedAlgorithm === 'a-star' ? 'A*' : 'Dijkstra'
                     }</span>}
                 </div>
             </div>
