@@ -278,11 +278,26 @@ const Grid = () => {
         const animateVisitedNodes = () => {
             const totalDuration = 3000;
             const delayPerIteration = totalDuration / visitedNodesInOrder.length;
-
+            
+            const visitedSet = new Set();
+        
             for (let i = 0; i < visitedNodesInOrder.length; i++) {
                 setTimeout(() => {
-                    setVisitedNodes(prev => [...prev, visitedNodesInOrder[i]]);
-
+                    const node = visitedNodesInOrder[i];
+                    const nodeKey = `${node.row},${node.col}`;
+                    
+                    if (visitedSet.has(nodeKey)) {
+                        const nodeElement = document.querySelector(`.row:nth-child(${node.row + 1}) > div:nth-child(${node.col + 1})`);
+                        if (nodeElement) {
+                            nodeElement.classList.remove('node-revisited');
+                            void nodeElement.offsetWidth;
+                            nodeElement.classList.add('node-revisited');
+                        }
+                    } else {
+                        visitedSet.add(nodeKey);
+                        setVisitedNodes(prev => [...prev, node]);
+                    }
+        
                     if (i === visitedNodesInOrder.length - 1) {
                         setTimeout(() => {
                             animatePath();
@@ -533,7 +548,7 @@ const Grid = () => {
                                 selectedAlgorithm === 'A*' ? 'A*' : 'Dijkstra'
                     }</span>}
                     {stats ?
-                        <span>Algorithm Stats: ON</span> :
+                        <span>Algorithm Stats: ON </span> :
                         <span>Algorithm Stats: OFF</span>
 
                     }
