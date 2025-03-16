@@ -20,7 +20,7 @@ Algo Visualizer is a web application that helps users visualize various pathfind
 
 ## 🧱 Tech Stack
 - **Frontend:** JavaScript, React, HTML/CSS
-- **Algorithms:** Dijkstra, A*, BFS, DFS
+
 
 
 
