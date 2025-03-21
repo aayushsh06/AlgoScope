@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://aayushsh06.github.io/Algo-Visualizer",
+  "homepage": "https://aayushsh06.github.io/AlgoScope/",
   "scripts": {
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist",

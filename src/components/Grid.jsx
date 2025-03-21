@@ -430,130 +430,159 @@ const Grid = () => {
 
     return (
         <>
-            {introOpen && <Introduction introOpen={introOpen} setIntroOpen={setIntroOpen} />}
             {(displayStats && stats) && <Stats {...displayStats}/>}
+            {introOpen && <Introduction introOpen={introOpen} setIntroOpen={setIntroOpen} />}
             <div className='drawing-select' ref={header}>
                 <div className='title'>
-                    <h1 className='header'>Algorithm Visualizer</h1>
+                    <h1 className='header'>AlgoScope</h1>
                 </div>
-
-                <div className="button-group node-controls">
-                    <button
-                        onClick={() => setDrawMode('barrier-node')}
-                        className={drawMode === 'barrier-node' ? 'active' : ''}
-                    >
-                        Barrier Node
-                    </button>
-                    <button
-                        onClick={() => setDrawMode('start-node')}
-                        className={drawMode === 'start-node' ? 'active' : ''}
-                    >
-                        Start Node
-                    </button>
-                    <button
-                        onClick={() => setDrawMode('target-node')}
-                        className={drawMode === 'target-node' ? 'active' : ''}
-                    >
-                        Target Node
-                    </button>
-                    <button
-                        onClick={() => setDrawMode('unvisited-node')}
-                        className={drawMode === 'unvisited-node' ? 'active' : ''}
-                    >
-                        Erase Node
-                    </button>
-                </div>
-
-                <div className="button-group maze-controls">
-                    <button
-                        onClick={() => createMaze()}
-                        disabled={isRunningAlgorithm || startNodes.length === 0 || !targetNode}
-                        className='generate-maze-button'
-                    >
-                        Generate Maze
-                    </button>
-                    <button
-                        onClick={() => { genWeights(grid, setWeights, setIsRunningAlgorithm); clearVisualization(); }}
-                        disabled={isRunningAlgorithm}
-                        className='generate-weights-button'
-                    >
-                        Generate Weights
-                    </button>
-                    <button
-                        onClick={() => { setWeights(null); clearVisualization(); }}
-                        disabled={isRunningAlgorithm}
-                        className='remove-weights-button'
-                    >
-                        Remove Weights
-                    </button>
-                    <button
-                        onClick={() => { setStats(prev => !prev) }}
-                        disabled={isRunningAlgorithm}
-                        className='configureStats'>
-                        Toggle Statistics
-                    </button>
-                </div>
-
-                <div className="button-group algorithm-controls">
-                    <div className="select-container">
-                        <select
-                            id="algorithm-select"
-                            value={selectedAlgorithm}
-                            onChange={(e) => setSelectedAlgorithm(e.target.value)}
-                            className="algorithm-select"
-                            disabled={isRunningAlgorithm}
-                        >
-                            <option value="" >Select Algorithm</option>
-                            <option value="Depth First Search">Depth-First Search (DFS)</option>
-                            <option value="Breadth First Search">Breadth-First Search (BFS)</option>
-                            <option value="Dijkstra">Dijkstra's Algorithm</option>
-                            <option value="A*">A* Search</option>
-                        </select>
+                
+                <div className="controls-container">
+                    {/* Drawing Tools Group */}
+                    <div className="button-group">
+                        <div className="button-group-title">Drawing Tools</div>
+                        <div className="button-row">
+                            <button
+                                onClick={() => setDrawMode('start-node')}
+                                className={drawMode === 'start-node' ? 'active' : ''}
+                            >
+                                Start Node
+                            </button>
+                            <button
+                                onClick={() => setDrawMode('target-node')}
+                                className={drawMode === 'target-node' ? 'active' : ''}
+                            >
+                                Target Node
+                            </button>
+                        </div>
+                        <div className="button-row">
+                            <button
+                                onClick={() => setDrawMode('barrier-node')}
+                                className={drawMode === 'barrier-node' ? 'active' : ''}
+                            >
+                                Barrier
+                            </button>
+                            <button
+                                onClick={() => setDrawMode('unvisited-node')}
+                                className={drawMode === 'unvisited-node' ? 'active' : ''}
+                            >
+                                Erase
+                            </button>
+                        </div>
                     </div>
-                    <button
-                        onClick={visualizeAlgorithm}
-                        disabled={isRunningAlgorithm || startNodes.length === 0 || !targetNode || !selectedAlgorithm}
-                        className='run-algorithm-button'
-                    >
-                        Visualize
-                    </button>
-                    <button
-                        onClick={clearVisualization}
-                        disabled={isRunningAlgorithm}
-                        className='clear-visualization-button'
-                    >
-                        Clear Visualization
-                    </button>
-                    <button
-                        onClick={resetGrid}
-                        disabled={isRunningAlgorithm}
-                        className='reset-grid-button'
-                    >
-                        Reset Grid
-                    </button>
+    
+                    {/* Modify Grid Group */}
+                    <div className="button-group">
+                        <div className="button-group-title">Modify Grid</div>
+                        <div className="button-row">
+                            <button
+                                onClick={() => createMaze()}
+                                disabled={isRunningAlgorithm || startNodes.length === 0 || !targetNode}
+                                className='generate-maze-button'
+                            >
+                                Generate Maze
+                            </button>
+                        </div>
+                        <div className="button-row">
+                            <button
+                                onClick={() => { genWeights(grid, setWeights, setIsRunningAlgorithm); clearVisualization(); }}
+                                disabled={isRunningAlgorithm}
+                                className='generate-weights-button'
+                            >
+                                Add Weights
+                            </button>
+                            <button
+                                onClick={() => { setWeights(null); clearVisualization(); }}
+                                disabled={isRunningAlgorithm}
+                                className='remove-weights-button'
+                            >
+                                Remove Weights
+                            </button>
+                        </div>
+                    </div>
+    
+                    {/* Algorithm Group */}
+                    <div className="button-group">
+                        <div className="button-group-title">Algorithm</div>
+                        <div className="select-container">
+                            <select
+                                id="algorithm-select"
+                                value={selectedAlgorithm}
+                                onChange={(e) => setSelectedAlgorithm(e.target.value)}
+                                className="algorithm-select"
+                                disabled={isRunningAlgorithm}
+                            >
+                                <option value="">Select Algorithm</option>
+                                <option value="Depth First Search">DFS</option>
+                                <option value="Breadth First Search">BFS</option>
+                                <option value="Dijkstra">Dijkstra</option>
+                                <option value="A*">A*</option>
+                            </select>
+                        </div>
+                        <div className="button-row">
+                            <button
+                                onClick={visualizeAlgorithm}
+                                disabled={isRunningAlgorithm || startNodes.length === 0 || !targetNode || !selectedAlgorithm}
+                                className='run-algorithm-button'
+                            >
+                                Visualize
+                            </button>
+                            <button
+                                onClick={() => { setStats(prev => !prev) }}
+                                disabled={isRunningAlgorithm}
+                                className='configureStats'
+                            >
+                                Statistics
+                            </button>
+                        </div>
+                    </div>
+    
+                    {/* Clear Group */}
+                    <div className="button-group">
+                        <div className="button-group-title">Clear</div>
+                        <div className="button-row">
+                            <button
+                                onClick={clearVisualization}
+                                disabled={isRunningAlgorithm}
+                                className='clear-visualization-button'
+                            >
+                                Clear Visualization
+                            </button>
+                        </div>
+                        <div className="button-row">
+                            <button
+                                onClick={resetGrid}
+                                disabled={isRunningAlgorithm}
+                                className='reset-grid-button'
+                            >
+                                Reset Grid
+                            </button>
+                        </div>
+                    </div>
                 </div>
-
-                <div className="status-info">
-                    {startNodes.length > 0 ?
-                        <span>Start Nodes: {startNodes.length}</span> :
-                        <span>No start nodes set</span>
-                    }
-                    {targetNode ?
-                        <span>Target Node: ({targetNode.row}, {targetNode.col})</span> :
-                        <span>No target node set</span>
-                    }
-                    {selectedAlgorithm && <span>Algorithm: {
-                        selectedAlgorithm === 'Depth First Search' ? 'DFS' :
-                            selectedAlgorithm === 'Breadth First Search' ? 'BFS' :
+    
+                <div className="status-container">
+                    <div className="status-info">
+                        {startNodes.length > 0 ?
+                            <span className="status-start">Start: {startNodes.length}</span> :
+                            <span className="status-start">No start</span>
+                        }
+                        {targetNode ?
+                            <span className="status-target">Target: ({targetNode.row}, {targetNode.col})</span> :
+                            <span className="status-target">No target</span>
+                        }
+                        {selectedAlgorithm && 
+                            <span className="status-algorithm">Algo: {
+                                selectedAlgorithm === 'Depth First Search' ? 'DFS' :
+                                selectedAlgorithm === 'Breadth First Search' ? 'BFS' :
                                 selectedAlgorithm === 'A*' ? 'A*' : 'Dijkstra'
-                    }</span>}
-                    {stats ?
-                        <span>Algorithm Stats: ON </span> :
-                        <span>Algorithm Stats: OFF</span>
-
-                    }
+                            }</span>
+                        }
+                        <span className="status-stats">Stats: {stats ? 'On' : 'Off'}</span>
+                    </div>
                 </div>
             </div>
+            
             <div
                 onMouseUp={handleMouseUp}
                 className='grid'
@@ -562,25 +591,25 @@ const Grid = () => {
                     <div key={rowIndex} className="row">
                         {row.map((col, colIndex) => {
                             let cellClass = grid[rowIndex][colIndex];
-
+    
                             const isOnPath = pathNodes.some(
                                 node => node.row === rowIndex && node.col === colIndex
                             );
-
+    
                             const isVisited = visitedNodes.some(
                                 node => node.row === rowIndex && node.col === colIndex
                             );
-
+    
                             const isSpecialNode =
                                 startNodes.some(node => node.row === rowIndex && node.col === colIndex) ||
                                 (targetNode && targetNode.row === rowIndex && targetNode.col === colIndex);
-
+    
                             if (isOnPath && !isSpecialNode) {
                                 cellClass = "path-node";
                             } else if (isVisited && !isSpecialNode && !isOnPath) {
                                 cellClass = "visited-node";
                             }
-
+    
                             return (
                                 <div
                                     key={colIndex}
