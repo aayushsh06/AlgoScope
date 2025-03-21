@@ -1,5 +1,5 @@
 # AlgoScope
-![algorithm-visualizer-large-text](https://github.com/user-attachments/assets/3afa6e95-9abc-4608-9a40-fe95110f3689)
+![updated-svg](https://github.com/user-attachments/assets/29c1ffee-7af9-4f92-8285-e94049cbf48e)
 
 
 ## 🚀 Try it out
