@@ -3,7 +3,7 @@
 
 
 ## 🚀 Try it out
-👉 **[Live Demo](https://aayushsh06.github.io/Algo-Visualizer/)**
+👉 **[Live Demo](https://aayushsh06.github.io/AlgoScope/)**
 
 ## 📜 Description
 Algo Visualizer is a web application that helps users visualize various pathfinding and graph traversal algorithms. This tool is designed for students, enthusiasts, and developers to better understand how algorithms work in real-time.
