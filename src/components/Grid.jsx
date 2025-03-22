@@ -440,19 +440,19 @@ const Grid = () => {
                 <div className="controls-container">
                     {/* Drawing Tools Group */}
                     <div className="button-group">
-                        <div className="button-group-title">Drawing Tools</div>
+                        <div className="button-group-title">Node Drawing Tools</div>
                         <div className="button-row">
                             <button
                                 onClick={() => setDrawMode('start-node')}
                                 className={drawMode === 'start-node' ? 'active' : ''}
                             >
-                                Start Node
+                                Start
                             </button>
                             <button
                                 onClick={() => setDrawMode('target-node')}
                                 className={drawMode === 'target-node' ? 'active' : ''}
                             >
-                                Target Node
+                                Target
                             </button>
                         </div>
                         <div className="button-row">
