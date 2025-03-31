@@ -21,7 +21,7 @@ const Stats = ({ algorithmRan, pathFound, numNodesPath, numNodesVisited, cost, s
     
     return (
         <>
-            <div className={`modal-overlay ${isActive ? 'active' : ''}`} onClick={handleClose}></div>
+            <div className={`stats-modal-overlay ${isActive ? 'active' : ''}`} onClick={handleClose}></div>
             <div className={`stats ${isActive ? 'active' : ''}`}>
                 <h1>{algorithmRan} Performance Statistics</h1>
                 {!pathFound ? (

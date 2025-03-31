@@ -1,4 +1,4 @@
-.modal-overlay {
+.stats-modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -12,7 +12,7 @@
     transition: background-color 0.3s ease, backdrop-filter 0.4s ease, opacity 0.3s ease, visibility 0.3s ease;
 }
 
-.modal-overlay.active {
+.stats-modal-overlay.active {
     background-color: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(5px);
     opacity: 1;

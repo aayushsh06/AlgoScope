@@ -261,14 +261,14 @@ const Grid = () => {
 
         let statsData = null;
 
-        if(stats){
-            statsData = 
+        if (stats) {
+            statsData =
             {
                 algorithmRan: selectedAlgorithm,
                 pathFound: path.length > 0,
                 numNodesPath: path.length,
                 numNodesVisited: new Set(visitedNodesInOrder.map(node => `${node.row},${node.col}`)).size,
-                cost:path.reduce((sum, node) => sum + (weights && weights[node.row] && weights[node.row][node.col] !== undefined ? weights[node.row][node.col] : 1), 0),
+                cost: path.reduce((sum, node) => sum + (weights && weights[node.row] && weights[node.row][node.col] !== undefined ? weights[node.row][node.col] : 1), 0),
                 setDisplayStats: setDisplayStats
             }
         }
@@ -278,14 +278,14 @@ const Grid = () => {
         const animateVisitedNodes = () => {
             const totalDuration = 3000;
             const delayPerIteration = totalDuration / visitedNodesInOrder.length;
-            
+
             const visitedSet = new Set();
-        
+
             for (let i = 0; i < visitedNodesInOrder.length; i++) {
                 setTimeout(() => {
                     const node = visitedNodesInOrder[i];
                     const nodeKey = `${node.row},${node.col}`;
-                    
+
                     if (visitedSet.has(nodeKey)) {
                         const nodeElement = document.querySelector(`.row:nth-child(${node.row + 1}) > div:nth-child(${node.col + 1})`);
                         if (nodeElement) {
@@ -297,7 +297,7 @@ const Grid = () => {
                         visitedSet.add(nodeKey);
                         setVisitedNodes(prev => [...prev, node]);
                     }
-        
+
                     if (i === visitedNodesInOrder.length - 1) {
                         setTimeout(() => {
                             animatePath();
@@ -430,13 +430,13 @@ const Grid = () => {
 
     return (
         <>
-            {(displayStats && stats) && <Stats {...displayStats}/>}
             {introOpen && <Introduction introOpen={introOpen} setIntroOpen={setIntroOpen} />}
+            {(displayStats && stats) && <Stats {...displayStats} />}
             <div className='drawing-select' ref={header}>
                 <div className='title'>
                     <h1 className='header'>AlgoScope</h1>
                 </div>
-                
+
                 <div className="controls-container">
                     {/* Drawing Tools Group */}
                     <div className="button-group">
@@ -470,7 +470,7 @@ const Grid = () => {
                             </button>
                         </div>
                     </div>
-    
+
                     {/* Modify Grid Group */}
                     <div className="button-group">
                         <div className="button-group-title">Modify Grid</div>
@@ -500,7 +500,7 @@ const Grid = () => {
                             </button>
                         </div>
                     </div>
-    
+
                     {/* Algorithm Group */}
                     <div className="button-group">
                         <div className="button-group-title">Algorithm</div>
@@ -536,7 +536,7 @@ const Grid = () => {
                             </button>
                         </div>
                     </div>
-    
+
                     {/* Clear Group */}
                     <div className="button-group">
                         <div className="button-group-title">Clear</div>
@@ -560,7 +560,7 @@ const Grid = () => {
                         </div>
                     </div>
                 </div>
-    
+
                 <div className="status-container">
                     <div className="status-info">
                         {startNodes.length > 0 ?
@@ -571,18 +571,18 @@ const Grid = () => {
                             <span className="status-target">Target: ({targetNode.row}, {targetNode.col})</span> :
                             <span className="status-target">No target</span>
                         }
-                        {selectedAlgorithm && 
+                        {selectedAlgorithm &&
                             <span className="status-algorithm">Algo: {
                                 selectedAlgorithm === 'Depth First Search' ? 'DFS' :
-                                selectedAlgorithm === 'Breadth First Search' ? 'BFS' :
-                                selectedAlgorithm === 'A*' ? 'A*' : 'Dijkstra'
+                                    selectedAlgorithm === 'Breadth First Search' ? 'BFS' :
+                                        selectedAlgorithm === 'A*' ? 'A*' : 'Dijkstra'
                             }</span>
                         }
                         <span className="status-stats">Stats: {stats ? 'On' : 'Off'}</span>
                     </div>
                 </div>
             </div>
-            
+
             <div
                 onMouseUp={handleMouseUp}
                 className='grid'
@@ -591,25 +591,25 @@ const Grid = () => {
                     <div key={rowIndex} className="row">
                         {row.map((col, colIndex) => {
                             let cellClass = grid[rowIndex][colIndex];
-    
+
                             const isOnPath = pathNodes.some(
                                 node => node.row === rowIndex && node.col === colIndex
                             );
-    
+
                             const isVisited = visitedNodes.some(
                                 node => node.row === rowIndex && node.col === colIndex
                             );
-    
+
                             const isSpecialNode =
                                 startNodes.some(node => node.row === rowIndex && node.col === colIndex) ||
                                 (targetNode && targetNode.row === rowIndex && targetNode.col === colIndex);
-    
+
                             if (isOnPath && !isSpecialNode) {
                                 cellClass = "path-node";
                             } else if (isVisited && !isSpecialNode && !isOnPath) {
                                 cellClass = "visited-node";
                             }
-    
+
                             return (
                                 <div
                                     key={colIndex}
